@@ -61,19 +61,21 @@ class MaksavitSpider(scrapy.Spider):
             original = float(get_number_from_string(original[0]))
             sale_tag = discount_percentage_calc(current, original)
 
-        description = {}
+        metadata = {}
         description_key = extracted_data.get('description_key')
         description_value = extracted_data.get('description_value')
         if description_key and description_value:
-            description[description_key[0]] = description_value[0]
+            metadata[description_key[0]] = description_value[0]
 
-            metadata = {}
+            metadata_body = {}
             for div in response.xpath(XPATH_METADATA):
                 for h3 in div.xpath(XPATH_METADATA_H3):
                     key = h3.xpath(XPATH_TEXT).extract_first()
-                    value = (h3.xpath(XPATH_SIBLING_TEXT).extract_first() or '').strip()
-                    metadata[key] = value
-            description.update(metadata)
+                    value = (
+                        h3.xpath(XPATH_SIBLING_TEXT).extract_first() or ''
+                    ).strip()
+                    metadata_body[key] = value
+            metadata.update(metadata_body)
 
         data = {
             'timestamp': dt.now().timestamp(),
@@ -98,7 +100,7 @@ class MaksavitSpider(scrapy.Spider):
                 'view360': [EMPTY_STRING],
                 'video': [EMPTY_STRING],
             },
-            'metadata': description,
+            'metadata': metadata,
             'variants': 0,
         }
         yield data
