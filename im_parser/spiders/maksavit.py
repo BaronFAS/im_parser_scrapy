@@ -11,6 +11,10 @@ from im_parser.constants import (
     SECTION_ONLY,
     XPATHS,
     EMPTY_STRING,
+    XPATH_METADATA,
+    XPATH_METADATA_H3,
+    XPATH_TEXT,
+    XPATH_SIBLING_TEXT,
 )
 from im_parser.utils import (
     title_split_string,
@@ -56,6 +60,21 @@ class MaksavitSpider(scrapy.Spider):
         if original:
             original = float(get_number_from_string(original[0]))
             sale_tag = discount_percentage_calc(current, original)
+
+        description = {}
+        description_key = extracted_data.get('description_key')
+        description_value = extracted_data.get('description_value')
+        if description_key and description_value:
+            description[description_key[0]] = description_value[0]
+
+            metadata = {}
+            for div in response.xpath(XPATH_METADATA):
+                for h3 in div.xpath(XPATH_METADATA_H3):
+                    key = h3.xpath(XPATH_TEXT).extract_first()
+                    value = (h3.xpath(XPATH_SIBLING_TEXT).extract_first() or '').strip()
+                    metadata[key] = value
+            description.update(metadata)
+
         data = {
             'timestamp': dt.now().timestamp(),
             'RPC': product_id,
@@ -71,13 +90,15 @@ class MaksavitSpider(scrapy.Spider):
             },
             'stock': {
                 'in_stock': True if extracted_data['in_stock'] else False,
-                'count': 0
+                'count': 0,
             },
             'assets': {
                 'main_image': extracted_data['main_image'],
-                "set_images": [EMPTY_STRING],
-                "view360": [EMPTY_STRING],
-                "video": [EMPTY_STRING]
+                'set_images': [EMPTY_STRING],
+                'view360': [EMPTY_STRING],
+                'video': [EMPTY_STRING],
             },
+            'metadata': description,
+            'variants': 0,
         }
         yield data
