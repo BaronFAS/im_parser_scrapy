@@ -1,6 +1,8 @@
 ﻿import re
 
-from im_parser.constants import RE_TITLE, SPICE, EMPTY_STRING
+from im_parser.constants import (
+    RE_TITLE, SPICE, EMPTY_STRING, RE_FLOAT_OR_INT
+)
 
 
 def title_split_string(product_title):
@@ -15,3 +17,16 @@ def title_split_string(product_title):
         return title_name, volume_product
     else:
         return product_title, None
+
+
+def strip_space(list_string):
+    return [string.strip() for string in list_string]
+
+
+def get_number_from_string(number):
+    return (re.search(RE_FLOAT_OR_INT, number)).group()
+
+
+def discount_percentage_calc(current, original):
+    """Вычислить процент скидки."""
+    return round(100 - 100 * current / original, 1)

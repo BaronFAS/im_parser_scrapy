@@ -1,13 +1,23 @@
 import scrapy
-import re
 from typing import Dict
 from datetime import datetime as dt
 from im_parser.constants import (
-    DOMAIN_NAME, START_URL, RU, XPATH_PAGE_URL, GET_PART_URL, RE_GET_NUMBER,
-    XPATH_TITLE, XPATH_MARKETING_TAG, XPATH_BRAND, XPATH_SECTION,
+    DOMAIN_NAME,
+    START_URL,
+    RU,
+    XPATH_PAGE_URL,
+    GET_PART_URL,
+    XPATH_TITLE,
     SECTION_ONLY,
+    XPATHS,
+    EMPTY_STRING,
 )
-from im_parser.utils import title_split_string
+from im_parser.utils import (
+    title_split_string,
+    strip_space,
+    discount_percentage_calc,
+    get_number_from_string,
+)
 
 
 class MaksavitSpider(scrapy.Spider):
@@ -26,25 +36,48 @@ class MaksavitSpider(scrapy.Spider):
         yield response.follow(next_page, callback=self.parse)
 
     def parse_product(self, response) -> Dict[str, str]:
-        product_id = re.search(RE_GET_NUMBER, response.url)
+        product_id = get_number_from_string(response.url)
         product_title = response.xpath(XPATH_TITLE).extract()[0]
         title_name, volume_product = title_split_string(product_title)
-        marketing_tags = response.xpath(XPATH_MARKETING_TAG).extract()
-        marketing_tags = [tag.strip() for tag in marketing_tags]
-        brand = response.xpath(XPATH_BRAND).extract_first()
+
+        extracted_data = {
+            key: strip_space(response.xpath(xpath).extract())
+            for key, xpath in XPATHS.items()
+        }
+
+        brand = extracted_data['brand']
         if brand:
-            brand = brand.strip()
-        section = response.xpath(XPATH_SECTION).extract()
-        section = [tag.strip() for tag in section]
-        price_data = ''
+            brand = brand[0]
+
+        original = extracted_data['original']
+        current = extracted_data['current']
+        if current:
+            current = float(get_number_from_string(current[0]))
+        if original:
+            original = float(get_number_from_string(original[0]))
+            sale_tag = discount_percentage_calc(current, original)
         data = {
             'timestamp': dt.now().timestamp(),
-            'RPC': product_id.group(),
+            'RPC': product_id,
             'url': response.url,
             'title': f'{title_name}, {volume_product}',
-            'marketing_tags': marketing_tags,
+            'marketing_tags': extracted_data['marketing_tags'],
             'brand': brand,
-            'section': section[:SECTION_ONLY],
-            'price_data': price_data,
+            'section': extracted_data['section'][:SECTION_ONLY],
+            'price_data': {
+                'current': current,
+                'original': original,
+                'sale_tag': f'Скидка {sale_tag}%' if original else '',
+            },
+            'stock': {
+                'in_stock': True if extracted_data['in_stock'] else False,
+                'count': 0
+            },
+            'assets': {
+                'main_image': extracted_data['main_image'],
+                "set_images": [EMPTY_STRING],
+                "view360": [EMPTY_STRING],
+                "video": [EMPTY_STRING]
+            },
         }
         yield data
