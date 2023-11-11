@@ -1,14 +1,15 @@
 ﻿from im_parser import settings
 
-
 # spider общие настройки
 DOMAIN_NAME = 'maksavit'
 RU = '.ru'
-DOMAIN_URL = ('https://' + DOMAIN_NAME + RU)
+DOMAIN_URL = (DOMAIN_NAME + RU)
+DOMAIN = 'https://' + DOMAIN_NAME + RU
+REGION = '/novosibirsk'
 PATH_LIST = (
-    '/novosibirsk/catalog/materinstvo_i_detstvo/detskaya_gigiena/',
-    # '/catalog/materinstvo_i_detstvo/detskie_aksessuary/',
-    # '/catalog/materinstvo_i_detstvo/detskie_podguzniki_i_pelenki/',
+    '/catalog/materinstvo_i_detstvo/detskie_aksessuary/',
+    '/catalog/materinstvo_i_detstvo/detskie_podguzniki_i_pelenki/',
+    '/catalog/materinstvo_i_detstvo/detskaya_gigiena/',
 )
 PARSE_ERROR = 'Ошибка в парсинге {response.status} на {response.url}'
 META = {
@@ -19,7 +20,6 @@ META = {
         'port': settings.PROXY_PORT,
     }
 }
-# не забыть добавить
 START_PAGE_INDEX = 1
 SPICE = ' '
 EMPTY_STRING = ''
