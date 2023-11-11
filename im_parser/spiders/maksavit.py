@@ -28,7 +28,7 @@ class MaksavitSpider(scrapy.Spider):
     allowed_domains = [DOMAIN_URL]
 
     def start_requests(self) -> Generator[Request, None, None]:
-        '''Запускает пасинг со страницы каталога.'''
+        """Запускает пасинг со страницы каталога."""
         for path in PATH_LIST:
             yield scrapy.Request(
                 url=DOMAIN + REGION + path,
@@ -37,7 +37,7 @@ class MaksavitSpider(scrapy.Spider):
             )
 
     def parse(self, response: Response) -> Generator[Request, None, None]:
-        '''Собирает со страниц катлога ссылки на страницы товара.'''
+        """Собирает со страниц катлога ссылки на страницы товара."""
         if response.status != 200:
             self.log(PARSE_ERROR.format(
                 status=response.status,
@@ -52,7 +52,7 @@ class MaksavitSpider(scrapy.Spider):
         yield response.follow(next_page, callback=self.parse, meta=META,)
 
     def parse_product(self, response: Response) -> Dict[str, str]:
-        '''Собирает информацию о товарах.'''
+        """Собирает информацию о товарах."""
         if response.status != 200:
             self.log(PARSE_ERROR.format(
                 status=response.status,

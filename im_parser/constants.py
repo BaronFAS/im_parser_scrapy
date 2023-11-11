@@ -1,7 +1,8 @@
 ﻿from im_parser import settings
 
+
 # spider общие настройки
-DOMAIN_NAME = 'maksavit'
+DOMAIN_NAME = settings.DOMAIN_NAME
 RU = '.ru'
 DOMAIN_URL = (DOMAIN_NAME + RU)
 DOMAIN = 'https://' + DOMAIN_NAME + RU

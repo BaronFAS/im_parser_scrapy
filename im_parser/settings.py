@@ -1,5 +1,12 @@
+import os
+
+from dotenv import load_dotenv
 from pathlib import Path
 
+load_dotenv()
+
+
+DOMAIN_NAME = os.getenv('DOMAIN_NAME')
 BASE_DIR = Path(__file__).parent
 
 BOT_NAME = "im_parser"
@@ -17,10 +24,10 @@ DEFAULT_REQUEST_HEADERS = {
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 543,
 }
-PROXY_HOST = '212.115.48.49'
-PROXY_PORT = '5174'
-PROXY_USER = 'user143352'
-PROXY_PASS = '3h0psg'
+PROXY_HOST = os.getenv('212.115.48.49')
+PROXY_PORT = os.getenv('5174')
+PROXY_USER = os.getenv('user143352')
+PROXY_PASS = os.getenv('3h0psg')
 
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
