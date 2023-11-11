@@ -2,7 +2,7 @@ import scrapy
 
 
 class ScrapyItem(scrapy.Item):
-    """Определить данные, извлекаемые при парсинге."""
+    """Настраивает параметры данных."""
     timestamp = scrapy.Field()
     RPC = scrapy.Field()
     url = scrapy.Field()
