@@ -54,7 +54,13 @@ DEFAULT_REQUEST_HEADERS = {
 #DOWNLOADER_MIDDLEWARES = {
 #    "im_parser.middlewares.ImParserDownloaderMiddleware": 543,
 #}
-
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 543,
+}
+PROXY_HOST = '212.115.48.49'
+PROXY_PORT = '5174'
+PROXY_USER = 'user143352'
+PROXY_PASS = '3h0psg'
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
