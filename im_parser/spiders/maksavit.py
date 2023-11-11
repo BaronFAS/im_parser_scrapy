@@ -1,87 +1,58 @@
-import scrapy
-
-from scrapy.http import Request, Response
-from typing import Dict, Generator
 from datetime import datetime as dt
-from im_parser.constants import (
-    DOMAIN_NAME,
-    DOMAIN_URL,
-    RU,
-    PATH_LIST,
-    PARSE_ERROR,
-    XPATH_PAGE_URL,
-    GET_PART_URL,
-    XPATH_TITLE,
-    SECTION_ONLY,
-    XPATHS,
-    XPATHS_LIST,
-    EMPTY_STRING,
-    XPATH_METADATA,
-    XPATH_METADATA_H3,
-    XPATH_TEXT,
-    XPATH_SIB_TEXT,
-    BRAND,
-    ORIGINAL,
-    CURRENT,
-    DECSRIPTION_KEY,
-    DECSRIPTION_VALUE,
-    MARKETING_TAGS,
-    SECTION,
-    TIMESTAMP,
-    RPC,
-    URL,
-    TITLE,
-    PRICE_DATA,
-    SALE_TAG,
-    STOCK,
-    IN_STOCK,
-    COUNT,
-    ASSETS,
-    MAIN_IMAGE,
-    SET_IMAGE,
-    VIEW360,
-    VIDEO,
-    METADATA,
-    VARIANTS,
-    ZERO,
-    META,
-)
-from im_parser.utils import (
-    title_split_string,
-    strip_space,
-    discount_percentage_calc,
-    get_number_from_string,
-)
+from typing import Dict, Generator
+
+import scrapy
+from scrapy.http import Request, Response
+
+from im_parser.constants import (ASSETS, BRAND, COUNT, CURRENT,
+                                 DECSRIPTION_KEY, DECSRIPTION_VALUE,
+                                 DOMAIN_NAME, DOMAIN_URL, EMPTY_STRING,
+                                 GET_PART_URL, IN_STOCK, MAIN_IMAGE,
+                                 MARKETING_TAGS, META, METADATA, ORIGINAL,
+                                 PARSE_ERROR, PATH_LIST, PRICE_DATA, REGION,
+                                 RPC, SALE_TAG, SECTION, SECTION_ONLY,
+                                 SET_IMAGE, START_PAGE_INDEX, STOCK, TIMESTAMP,
+                                 TITLE, URL, VARIANTS, VIDEO, VIEW360,
+                                 XPATH_METADATA, XPATH_METADATA_H3,
+                                 XPATH_PAGE_URL, XPATH_SIB_TEXT, XPATH_TEXT,
+                                 XPATH_TITLE, XPATHS, XPATHS_LIST, ZERO,
+                                 DOMAIN)
+from im_parser.items import ScrapyItem
+from im_parser.utils import (discount_percentage_calc, get_number_from_string,
+                             strip_space, title_split_string)
 
 
 class MaksavitSpider(scrapy.Spider):
     name = DOMAIN_NAME
-    page_index = 700
-    allowed_domains = [DOMAIN_NAME + RU]
+    page_index = START_PAGE_INDEX
+    allowed_domains = [DOMAIN_URL]
 
-    def start_requests(self):
+    def start_requests(self) -> Generator[Request, None, None]:
+        '''Запускает пасинг со страницы каталога.'''
         for path in PATH_LIST:
             yield scrapy.Request(
-                url=DOMAIN_URL + path,
+                url=DOMAIN + REGION + path,
                 callback=self.parse,
                 meta=META,
             )
 
     def parse(self, response: Response) -> Generator[Request, None, None]:
+        '''Собирает со страниц катлога ссылки на страницы товара.'''
         if response.status != 200:
             self.log(PARSE_ERROR.format(
                 status=response.status,
-                url=response.url)
+                url=response.url),
             )
         product_page_urls = response.xpath(XPATH_PAGE_URL).extract()
         for link in product_page_urls:
             yield response.follow(link, self.parse_product)
-
-        next_page = f'{DOMAIN_URL}{GET_PART_URL}{self.page_index}'
+        url = response.url.split('?')[ZERO]
+        next_page = f'{url}{GET_PART_URL}{self.page_index}'
         self.page_index += 1
-        yield response.follow(next_page, callback=self.parse)
+        yield response.follow(next_page, callback=self.parse, meta=META,)
 
     def parse_product(self, response: Response) -> Dict[str, str]:
+        '''Собирает информацию о товарах.'''
         if response.status != 200:
             self.log(PARSE_ERROR.format(
                 status=response.status,
@@ -153,4 +124,4 @@ class MaksavitSpider(scrapy.Spider):
             METADATA: metadata,
             VARIANTS: ZERO,
         }
-        yield data
+        yield ScrapyItem(data)
