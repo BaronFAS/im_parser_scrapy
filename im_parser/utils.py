@@ -1,9 +1,7 @@
 ﻿import re
+from typing import Optional, Tuple
 
-from im_parser.constants import (
-    RE_TITLE, SPICE, EMPTY_STRING, RE_FLOAT_OR_INT
-)
-from typing import Tuple, Optional
+from im_parser.constants import EMPTY_STRING, RE_FLOAT_OR_INT, RE_TITLE, SPICE
 
 
 def title_split_string(product_title: str) -> Tuple[str, Optional[str]]:
