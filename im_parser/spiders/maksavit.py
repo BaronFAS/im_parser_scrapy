@@ -57,7 +57,7 @@ class MaksavitSpider(scrapy.Spider):
         current = extracted_data['current']
         if current:
             current = float(get_number_from_string(current[0]))
-        if original:
+        if current and original:
             original = float(get_number_from_string(original[0]))
             sale_tag = discount_percentage_calc(current, original)
 
