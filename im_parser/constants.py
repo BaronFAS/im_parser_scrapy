@@ -1,4 +1,7 @@
-﻿# spider общие настройки
+﻿from im_parser import settings
+
+
+# spider общие настройки
 DOMAIN_NAME = 'maksavit'
 RU = '.ru'
 DOMAIN_URL = ('https://' + DOMAIN_NAME + RU)
@@ -8,6 +11,14 @@ PATH_LIST = (
     # '/catalog/materinstvo_i_detstvo/detskie_podguzniki_i_pelenki/',
 )
 PARSE_ERROR = 'Ошибка в парсинге {response.status} на {response.url}'
+META = {
+    'proxy': 'http://%(user)s:%(pass)s@%(host)s:%(port)s' % {
+        'user': settings.PROXY_USER,
+        'pass': settings.PROXY_PASS,
+        'host': settings.PROXY_HOST,
+        'port': settings.PROXY_PORT,
+    }
+}
 # не забыть добавить
 START_PAGE_INDEX = 1
 SPICE = ' '
