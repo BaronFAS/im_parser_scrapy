@@ -44,6 +44,7 @@ from im_parser.constants import (
     METADATA,
     VARIANTS,
     ZERO,
+    META,
 )
 from im_parser.utils import (
     title_split_string,
@@ -60,7 +61,11 @@ class MaksavitSpider(scrapy.Spider):
 
     def start_requests(self):
         for path in PATH_LIST:
-            yield scrapy.Request(url=DOMAIN_URL + path, callback=self.parse)
+            yield scrapy.Request(
+                url=DOMAIN_URL + path,
+                callback=self.parse,
+                meta=META,
+            )
 
     def parse(self, response: Response) -> Generator[Request, None, None]:
         if response.status != 200:
