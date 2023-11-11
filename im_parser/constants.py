@@ -1,12 +1,13 @@
 ﻿# spider общие настройки
 DOMAIN_NAME = 'maksavit'
 RU = '.ru'
-START_URL = (
-    'https://'
-    + DOMAIN_NAME
-    + RU
-    + '/novosibirsk/catalog/materinstvo_i_detstvo/detskaya_gigiena/'
+DOMAIN_URL = ('https://' + DOMAIN_NAME + RU)
+PATH_LIST = (
+    '/novosibirsk/catalog/materinstvo_i_detstvo/detskaya_gigiena/',
+    # '/catalog/materinstvo_i_detstvo/detskie_aksessuary/',
+    # '/catalog/materinstvo_i_detstvo/detskie_podguzniki_i_pelenki/',
 )
+PARSE_ERROR = 'Ошибка в парсинге {response.status} на {response.url}'
 # не забыть добавить
 START_PAGE_INDEX = 1
 SPICE = ' '
