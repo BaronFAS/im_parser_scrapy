@@ -3,9 +3,10 @@
 from im_parser.constants import (
     RE_TITLE, SPICE, EMPTY_STRING, RE_FLOAT_OR_INT
 )
+from typing import Tuple, Optional
 
 
-def title_split_string(product_title):
+def title_split_string(product_title: str) -> Tuple[str, Optional[str]]:
     '''Раскладывает строку title на части и записывает объем
     (в гр. или мл., если он есть) продукта в конец строки.'''
     match = re.search(RE_TITLE, product_title)
