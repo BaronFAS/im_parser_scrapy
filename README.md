@@ -2,6 +2,7 @@
 
 ### Автор:
 - [Михаил Приселков](https://github.com/BaronFAS)
+- [Телеграмм](https://t.me/def_misha_work)
 
 ### Технологии:
 - Python 3.11.6
