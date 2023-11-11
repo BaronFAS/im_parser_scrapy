@@ -41,6 +41,7 @@ from im_parser.constants import (
     VIDEO,
     METADATA,
     VARIANTS,
+    ZERO,
 )
 from im_parser.utils import (
     title_split_string,
@@ -121,7 +122,7 @@ class MaksavitSpider(scrapy.Spider):
             },
             STOCK: {
                 IN_STOCK: True if extracted_data_list[IN_STOCK] else False,
-                COUNT: 0,
+                COUNT: ZERO,
             },
             ASSETS: {
                 MAIN_IMAGE: extracted_data[MAIN_IMAGE],
@@ -130,6 +131,6 @@ class MaksavitSpider(scrapy.Spider):
                 VIDEO: [EMPTY_STRING],
             },
             METADATA: metadata,
-            VARIANTS: 0,
+            VARIANTS: ZERO,
         }
         yield data

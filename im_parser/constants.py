@@ -11,7 +11,7 @@ START_URL = (
 START_PAGE_INDEX = 1
 SPICE = ' '
 EMPTY_STRING = ''
-
+ZERO = 0
 
 # Парсинг страницы каталога
 XPATH_PAGE_URL = '//a[@class="product-card-block__title"]/@href'
