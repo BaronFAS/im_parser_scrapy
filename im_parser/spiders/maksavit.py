@@ -5,8 +5,10 @@ from typing import Dict, Generator
 from datetime import datetime as dt
 from im_parser.constants import (
     DOMAIN_NAME,
-    START_URL,
+    DOMAIN_URL,
     RU,
+    PATH_LIST,
+    PARSE_ERROR,
     XPATH_PAGE_URL,
     GET_PART_URL,
     XPATH_TITLE,
@@ -55,18 +57,31 @@ class MaksavitSpider(scrapy.Spider):
     name = DOMAIN_NAME
     page_index = 700
     allowed_domains = [DOMAIN_NAME + RU]
-    start_urls = [START_URL]
+
+    def start_requests(self):
+        for path in PATH_LIST:
+            yield scrapy.Request(url=DOMAIN_URL + path, callback=self.parse)
 
     def parse(self, response: Response) -> Generator[Request, None, None]:
+        if response.status != 200:
+            self.log(PARSE_ERROR.format(
+                status=response.status,
+                url=response.url)
+            )
         product_page_urls = response.xpath(XPATH_PAGE_URL).extract()
         for link in product_page_urls:
             yield response.follow(link, self.parse_product)
 
-        next_page = f'{START_URL}{GET_PART_URL}{self.page_index}'
+        next_page = f'{DOMAIN_URL}{GET_PART_URL}{self.page_index}'
         self.page_index += 1
         yield response.follow(next_page, callback=self.parse)
 
     def parse_product(self, response: Response) -> Dict[str, str]:
+        if response.status != 200:
+            self.log(PARSE_ERROR.format(
+                status=response.status,
+                url=response.url)
+            )
         product_id = get_number_from_string(response.url)
         product_title = response.xpath(XPATH_TITLE).extract_first()
         title_name, volume_product = title_split_string(product_title)
@@ -125,7 +140,7 @@ class MaksavitSpider(scrapy.Spider):
                 COUNT: ZERO,
             },
             ASSETS: {
-                MAIN_IMAGE: extracted_data[MAIN_IMAGE],
+                MAIN_IMAGE: DOMAIN_URL + extracted_data[MAIN_IMAGE],
                 SET_IMAGE: [EMPTY_STRING],
                 VIEW360: [EMPTY_STRING],
                 VIDEO: [EMPTY_STRING],
